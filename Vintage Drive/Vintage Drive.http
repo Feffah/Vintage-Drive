@@ -1,0 +1,6 @@
+@Vintage_Drive_HostAddress = http://localhost:5034
+
+GET {{Vintage_Drive_HostAddress}}/
+Accept: application/json
+
+###
