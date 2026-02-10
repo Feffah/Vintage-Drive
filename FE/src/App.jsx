@@ -1,0 +1,93 @@
+import { useState, useEffect } from 'react'
+import './App.css'
+import Navbar from './pages/Navbar'
+import Home from './pages/Home'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import Products from './pages/Products'
+import Cart from './pages/Cart'
+import Footer from './pages/Footer'
+import ProductsDetails from './pages/ProductsDetails'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+
+
+
+function App() {
+  const [page, setPage] = useState('home')
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'))
+  const [cart, setCart] = useState(() => {
+    const saved = localStorage.getItem('cart');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
+
+  const handleLogin = () => {
+    setIsAuthenticated(true)
+    setPage('products')
+  }
+  const handleRegister = () => {
+    setPage('login')
+  }
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    setIsAuthenticated(false)
+    setPage('home')
+    setCart([])
+  }
+  const handleNavigate = (to) => setPage(to)
+  const handleAddToCart = (car) => {
+    setCart(prev => {
+      const idx = prev.findIndex(item => item.id === car.id);
+      if (idx > -1) {
+        return prev.map((item, i) => i === idx ? { ...item, quantity: item.quantity + 1 } : item);
+      } else {
+        return [...prev, { ...car, quantity: 1 }];
+      }
+    });
+  };
+  const handleRemoveFromCart = (idx) => {
+    setCart(prev => prev.filter((_, i) => i !== idx));
+  };
+  const handleChangeQuantity = (idx, delta) => {
+    setCart(prev => prev.map((item, i) =>
+      i === idx ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
+    ));
+  };
+  const handleCheckout = () => {
+    setCart([]);
+    alert('Thank you for your purchase!');
+  };
+
+  let content
+  if (page === 'login') content = <Login onLogin={handleLogin} />
+  else if (page === 'register') content = <Register onRegister={handleRegister} />
+  else if (page === 'products') content = <Products onAddToCart={handleAddToCart} onNavigate={handleNavigate} />
+  else if (page === 'details') content = <ProductsDetails onAddToCart={handleAddToCart} />
+
+  else if (page === 'cart') content = <Cart cart={cart} onRemove={handleRemoveFromCart} onChangeQuantity={handleChangeQuantity} onCheckout={handleCheckout} />
+  else content = <Home />
+
+  return (
+    <>
+
+      <BrowserRouter>
+        <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} onNavigate={handleNavigate} cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)} />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products onAddToCart={handleAddToCart} onNavigate={handleNavigate} />} />
+          <Route path="/details/:productId" element={<ProductsDetails onAddToCart={handleAddToCart} />} />
+          <Route path="/cart" element={<Cart cart={cart} onRemove={handleRemoveFromCart} onChangeQuantity={handleChangeQuantity} onCheckout={handleCheckout} />} />
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          <Route path="/register" element={<Register onRegister={handleRegister} />} />
+        </Routes>
+      </BrowserRouter>
+      <Footer />
+    </>
+  )
+}
+
+export default App
