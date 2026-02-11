@@ -1,4 +1,4 @@
-import './Products.css';
+import '../products/Products.css';
 
 export default function Cart({ cart, onRemove, onChangeQuantity, onCheckout }) {
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);

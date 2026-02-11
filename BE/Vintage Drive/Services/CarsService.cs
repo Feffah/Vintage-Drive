@@ -98,5 +98,15 @@ namespace Vintage_Drive.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+
+        //GET BY CATEGRORY
+
+        public async Task<List<Models.Entities.Cars>> GetCarsByCategoryAsync(Guid categoryId)
+        {
+            return await _context.Cars
+                .Where(c => c.Categories.Any(cat => cat.CategoryId == categoryId))
+                .ToListAsync();
+        }
     }
 }

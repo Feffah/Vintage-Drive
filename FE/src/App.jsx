@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import Navbar from './pages/Navbar'
-import Home from './pages/Home'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import Products from './pages/Products'
-import Cart from './pages/Cart'
-import Footer from './pages/Footer'
-import ProductsDetails from './pages/ProductsDetails'
+import Navbar from './components/navbar/Navbar'
+import Home from './pages/home/Home'
+import Login from './pages/auth/Login'
+import Register from './pages/auth/Register'
+import Products from './pages/products/Products'
+import Categories from './pages/categories/Categories'
+import Cart from './pages/cart/Cart'
+import Footer from './components/footer/Footer'
+import ProductsDetails from './pages/products/ProductsDetails'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
@@ -15,7 +16,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 function App() {
   const [page, setPage] = useState('home')
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'))
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('access_token'))
   const [cart, setCart] = useState(() => {
     const saved = localStorage.getItem('cart');
     return saved ? JSON.parse(saved) : [];
@@ -27,15 +28,12 @@ function App() {
 
   const handleLogin = () => {
     setIsAuthenticated(true)
-    setPage('products')
   }
   const handleRegister = () => {
-    setPage('login')
   }
   const handleLogout = () => {
-    localStorage.removeItem('token')
+    localStorage.removeItem('access_token')
     setIsAuthenticated(false)
-    setPage('home')
     setCart([])
   }
   const handleNavigate = (to) => setPage(to)
@@ -62,14 +60,14 @@ function App() {
     alert('Thank you for your purchase!');
   };
 
-  let content
-  if (page === 'login') content = <Login onLogin={handleLogin} />
-  else if (page === 'register') content = <Register onRegister={handleRegister} />
-  else if (page === 'products') content = <Products onAddToCart={handleAddToCart} onNavigate={handleNavigate} />
-  else if (page === 'details') content = <ProductsDetails onAddToCart={handleAddToCart} />
+  // let content
+  // if (page === 'login') content = <Login onLogin={handleLogin} />
+  // else if (page === 'register') content = <Register onRegister={handleRegister} />
+  // else if (page === 'products') content = <Products onAddToCart={handleAddToCart} onNavigate={handleNavigate} />
+  // else if (page === 'details') content = <ProductsDetails onAddToCart={handleAddToCart} />
 
-  else if (page === 'cart') content = <Cart cart={cart} onRemove={handleRemoveFromCart} onChangeQuantity={handleChangeQuantity} onCheckout={handleCheckout} />
-  else content = <Home />
+  // else if (page === 'cart') content = <Cart cart={cart} onRemove={handleRemoveFromCart} onChangeQuantity={handleChangeQuantity} onCheckout={handleCheckout} />
+  // else content = <Home />
 
   return (
     <>
@@ -79,6 +77,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products onAddToCart={handleAddToCart} onNavigate={handleNavigate} />} />
+          <Route path="/categories" element={<Categories/>} />
           <Route path="/details/:productId" element={<ProductsDetails onAddToCart={handleAddToCart} />} />
           <Route path="/cart" element={<Cart cart={cart} onRemove={handleRemoveFromCart} onChangeQuantity={handleChangeQuantity} onCheckout={handleCheckout} />} />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />

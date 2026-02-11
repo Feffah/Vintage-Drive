@@ -32,6 +32,14 @@ namespace Vintage_Drive.Controllers
             }
             return Ok(car);
         }
+
+        [HttpGet("category/{categoryId}")]
+        public async Task<ActionResult<IEnumerable<CarsDto>>> GetCarsByCategory(Guid categoryId)
+        {
+            var cars = await _carService.GetCarsByCategoryAsync(categoryId);
+            return Ok(cars);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<CarsDto>> CreateCar([FromBody] CarsDto carCreateDto)

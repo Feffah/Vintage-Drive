@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using Vintage_Drive.Models.Dto;
 using Vintage_Drive.Models.Entities;
 
@@ -88,64 +89,69 @@ namespace Vintage_Drive.Controllers
             try
             {
                 Users user = await _userManager.FindByNameAsync(loginRequestDto.UserName);
+
                 if (user is null)
-                {
-                    return BadRequest();
-                }
+                    return Unauthorized("Utente non trovato");
 
-                Microsoft.AspNetCore.Identity.SignInResult result = await this._signInManager.PasswordSignInAsync(user, loginRequestDto.Password, false, false);
+                var result = await _signInManager.PasswordSignInAsync(
+                    user,
+                    loginRequestDto.Password,
+                    false,
+                    false
+                );
+
                 if (!result.Succeeded)
-                {
-                    return BadRequest();
+                    return Unauthorized("Password non valida");
 
-                }
-                List<string> roles = (await this._userManager.GetRolesAsync(user)).ToList();
+                // 🔥 Recupero ruoli
+                List<string> roles = (await _userManager.GetRolesAsync(user)).ToList();
 
+                // 🔥 Claims
                 List<Claim> userClaims = new List<Claim>
-{
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.UserName)
-};
+        {
+            new Claim(ClaimTypes.Name, user.UserName)
+        };
 
                 foreach (string roleName in roles)
                 {
                     userClaims.Add(new Claim(ClaimTypes.Role, roleName));
                 }
 
+                var key = Encoding.UTF8.GetBytes(
+                    "11b57b25e1c4a98e5a1b51e9bc3a480c9d03bcb8a3b98662fd00183f684d37a1"
+                );
 
-                var key = System.Text.Encoding.UTF8.GetBytes("11b57b25e1c4a98e5a1b51e9bc3a480c9d03bcb8a3b98662fd00183f684d37a1");
-
-                SigningCredentials cred = new SigningCredentials(
+                var cred = new SigningCredentials(
                     new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256);
+                    SecurityAlgorithms.HmacSha256
+                );
 
+                var tokenExpiration = DateTime.UtcNow.AddMinutes(30);
 
-                var tokenExpiration = DateTime.Now.AddMinutes(30);
-
-                JwtSecurityToken jwt = new JwtSecurityToken(
-                    "https://",
-                    "https://",
-                     claims: userClaims,
-                      expires: tokenExpiration,
+                var jwt = new JwtSecurityToken(
+                    issuer: "https://",
+                    audience: "https://",
+                    claims: userClaims,
+                    expires: tokenExpiration,
                     signingCredentials: cred
-
-                    );
+                );
 
                 string token = new JwtSecurityTokenHandler().WriteToken(jwt);
-                return Ok(new LoginResponseDto()
+
+                // 🔥 RESPONSE COMPLETO
+                return Ok(new
                 {
-                    Token = token,
-                    Expiration = tokenExpiration
-
+                    token = token,
+                    expiration = tokenExpiration,
+                    userName = user.UserName,
+                    roles = roles
                 });
-
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
-
             }
-
         }
+
     }
-    }
+}
