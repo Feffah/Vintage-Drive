@@ -109,6 +109,7 @@ namespace Vintage_Drive.Controllers
                 // 🔥 Claims
                 List<Claim> userClaims = new List<Claim>
         {
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Name, user.UserName)
         };
 
@@ -143,6 +144,7 @@ namespace Vintage_Drive.Controllers
                 {
                     token = token,
                     expiration = tokenExpiration,
+                    userId = user.Id,
                     userName = user.UserName,
                     roles = roles
                 });

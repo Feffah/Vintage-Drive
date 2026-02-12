@@ -20,13 +20,13 @@
 
         public string Email { get; set; }
 
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         public DateTime CreateAt { get; set; }
 
         public bool IsDeleted { get; set; }
         public DateTime Birthday { get; set; }
 
-        public string Role { get; set; }
+        public string? Role { get; set; }
     }
 }

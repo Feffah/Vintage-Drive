@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Vintage_Drive.Models.Dto;
 
 namespace Vintage_Drive.Controllers
 {
@@ -42,7 +45,7 @@ namespace Vintage_Drive.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult> CreateOrder(Models.Entities.Orders order)
+        public async Task<IActionResult> CreateOrder(Models.Dto.CreateOrderDto order)
         {
             var createdOrder = await _ordersService.CreateOrderAsync(order);
             return CreatedAtAction(nameof(GetOrderById), new { id = createdOrder.OrderId }, createdOrder);
@@ -51,16 +54,19 @@ namespace Vintage_Drive.Controllers
         //UPDATE
 
         [HttpPut("{id}")]
-
-        public async Task<IActionResult> UpdateOrder(Guid id, Models.Entities.Orders updatedOrder)
+        public async Task<IActionResult> UpdateOrder(Guid id, OrdersDto dto)
         {
-            var order = await _ordersService.UpdateOrderAsync(id, updatedOrder);
-            if (order == null)
-            {
+            var updatedOrder = await _ordersService.UpdateOrderAsync(id, dto);
+
+            if (updatedOrder == null)
                 return NotFound();
-            }
-            return Ok(order);
+
+            return Ok(updatedOrder); 
         }
+
+
+
+
 
         //DELETE
 

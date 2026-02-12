@@ -2,6 +2,7 @@
 {
     public class CarsDto
     {
+        public Guid CarId { get; set; }
         public string Make { get; set; }            // Marca 
         public string Model { get; set; }           // Modello (es. Mustang Shelby)
         public string Version { get; set; }         // Allestimento / serie
@@ -35,5 +36,7 @@
         public DateTime UpdatedAt { get; set; }       // Data di ultimo aggiornamento dell'annuncio
         public DateTime? PublishedAt { get; set; }    // Data di pubblicazione dell'annuncio
         public bool IsVisible { get; set; }         // Visibilità dell'annuncio
+
+        public List<CategoriesDto> Categories { get; set; } = new();
     }
 }

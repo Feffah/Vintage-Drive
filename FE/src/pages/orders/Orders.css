@@ -1,0 +1,250 @@
+.orders-container {
+    padding: 2rem;
+    background: #f3f0e8;
+    min-height: 80vh;
+}
+
+.orders-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.orders-header h1 {
+    color: #b48a78;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.no-orders-message {
+    text-align: center;
+    padding: 3rem;
+    background: #fffaf6;
+    border-radius: 12px;
+    color: #666;
+    max-width: 600px;
+    margin: 2rem auto;
+}
+
+.orders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.order-card {
+    background: #fffaf6;
+    border-radius: 12px;
+    border: 2px solid #f0ece4;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    transition: all 0.3s ease;
+}
+
+.order-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    border-color: #b48a78;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f0ece4;
+}
+
+.order-id {
+    color: #b48a78;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.order-date {
+    color: #999;
+    font-size: 0.9rem;
+}
+
+.status-badge {
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-processing {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-completed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.order-summary {
+    margin-bottom: 1rem;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    color: #666;
+}
+
+.summary-label {
+    font-weight: 500;
+}
+
+.summary-value {
+    color: #5e4636;
+    text-align: right;
+}
+
+.order-total {
+    color: #b48a78;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.order-details {
+    background: #f9f9f9;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #666;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.view-button {
+    background: #b48a78;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 1rem;
+    transition: background 0.2s;
+}
+
+.view-button:hover {
+    background: #a07c6b;
+}
+
+@media (max-width: 1024px) {
+    .orders-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .orders-container {
+        padding: 1rem;
+    }
+
+    .orders-header h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .orders-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .order-card {
+        padding: 1.25rem;
+    }
+
+    .order-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .order-details {
+        max-height: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .orders-container {
+        padding: 0.75rem;
+        min-height: auto;
+    }
+
+    .orders-header h1 {
+        font-size: 1.25rem;
+    }
+
+    .orders-grid {
+        gap: 0.75rem;
+    }
+
+    .order-card {
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    .order-id {
+        font-size: 1rem;
+    }
+
+    .summary-item {
+        font-size: 0.85rem;
+    }
+
+    .order-total {
+        font-size: 1.1rem;
+    }
+
+    .order-details {
+        font-size: 0.85rem;
+        padding: 0.75rem;
+    }
+
+    .view-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.95rem;
+    }
+
+    .no-orders-message {
+        padding: 2rem 1rem;
+        border-radius: 8px;
+        margin: 1.5rem auto;
+    }
+}

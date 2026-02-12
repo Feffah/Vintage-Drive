@@ -2,6 +2,7 @@ import Carousel from 'react-bootstrap/Carousel';
 import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import './Home.css';
 
 export default function Home() {
     return (
@@ -41,35 +42,6 @@ export default function Home() {
                 <Image width={270} style={{ marginLeft: '15px' }} src="/img/porsche_logo.png" alt="Porsche logo" rounded />
                 <Image width={290} style={{ marginLeft: '20px' }} src="/img/audi_logo.png" alt="Audi logo" rounded />
             </div>
-
-            <div className='vehicles-explorer'>
-                <h2 style={{ color: '#b48a78', marginTop: '20px' }}>Esplora i nostri veicoli</h2>
-                <div className="featured-cars" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-evenly' }}>
-                    <Card style={{ width: '18rem', margin: '10px' }}>
-                        <Card.Img variant="top" src="/img/coming_soon.jpg" />
-                        <Card.Body>
-                            <Card.Title>In Arrivo</Card.Title>
-                            <Card.Text>
-                                Mostra tutti <br /> i veicoli in arrivo
-                            </Card.Text>
-                            <Button variant="primary">Dettagli</Button>
-                        </Card.Body>
-                    </Card>
-
-                    <Card style={{ width: '18rem', margin: '10px' }}>
-                        <Card.Img variant="top" src="/img/pronta_consegna.jpg" />
-                        <Card.Body>
-                            <Card.Title>Pronta Consegna</Card.Title>
-                            <Card.Text>
-                                Mostra i veicoli in pronta consegna
-                            </Card.Text>
-                            <Button variant="primary">Dettagli</Button>
-                        </Card.Body>
-                    </Card>
-
-                </div>
-            </div>
-
         </div >
 
     );

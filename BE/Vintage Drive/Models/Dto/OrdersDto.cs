@@ -3,7 +3,7 @@
     public class OrdersDto
     {
         public Guid OrderId { get; set; }         // Identificativo univoco dell'ordine
-        public Guid UserId { get; set; }          // Identificativo dell'utente che ha effettuato l'ordine
+        public string UserId { get; set; }          // Identificativo dell'utente che ha effettuato l'ordine
         public Guid PaymentId { get; set; }       // Identificativo del pagamento associato all'ordine
         public Guid ShipmentId { get; set; }      // Identificativo della spedizione associata all'ordine
         public DateTime OrderDate { get; set; }   // Data in cui l'ordine è stato effettuato

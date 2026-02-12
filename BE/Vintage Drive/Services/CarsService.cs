@@ -1,5 +1,7 @@
-﻿using Vintage_Drive.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Vintage_Drive.Data;
+using Vintage_Drive.Models.Dto;
+using Vintage_Drive.Models.Entities;
 namespace Vintage_Drive.Services
 {
     public class CarsService
@@ -11,17 +13,112 @@ namespace Vintage_Drive.Services
         }
 
         //GET ALL
-        public async Task<List<Models.Entities.Cars>> GetAllCarsAsync()
+        public async Task<List<CarsDto>> GetAllCarsAsync()
         {
-            return await _context.Cars.ToListAsync();
+            return await _context.Cars
+                .Select(c => new CarsDto
+                {
+                    CarId = c.CarId,
+                    Make = c.Make,
+                    Model = c.Model,
+                    Version = c.Version,
+                    Year = c.Year,
+                    VIN = c.VIN,
+                    LicensePlate = c.LicensePlate,
+                    EngineType = c.EngineType,
+                    EngineDisplacement = c.EngineDisplacement,
+                    HorsePower = c.HorsePower,
+                    Torque = c.Torque,
+                    Transmission = c.Transmission,
+                    Gears = c.Gears,
+                    ExteriorColor = c.ExteriorColor,
+                    InteriorColor = c.InteriorColor,
+                    InteriorMaterial = c.InteriorMaterial,
+                    Mileage = c.Mileage,
+                    FuelType = c.FuelType,
+                    FuelConsumption = c.FuelConsumption,
+                    BodyStyle = c.BodyStyle,
+                    OwnersCount = c.OwnersCount,
+                    HasOriginalDocuments = c.HasOriginalDocuments,
+                    Condition = c.Condition,
+                    IsAsiCertified = c.IsAsiCertified,
+                    CertificationDate = c.CertificationDate,
+                    IsRoadLegal = c.IsRoadLegal,
+                    LastInspectionDate = c.LastInspectionDate,
+                    Description = c.Description,
+                    Price = c.Price,
+                    CarStatus = c.CarStatus,
+                    CreatedAt = c.CreatedAt,
+                    UpdatedAt = c.UpdatedAt,
+                    PublishedAt = c.PublishedAt,
+                    IsVisible = c.IsVisible,
+                    Categories = c.Categories
+                        .Select(cat => new CategoriesDto
+                        {
+                            CategoryId = cat.CategoryId,
+                            Name = cat.Name
+                        }).ToList()
+                })
+                .ToListAsync();
         }
+
 
         //GET BY ID
 
-        public async Task<Models.Entities.Cars?> GetCarByIdAsync(Guid carId)
+        public async Task<CarsDto?> GetCarByIdAsync(Guid carId)
         {
-            return await _context.Cars.FirstOrDefaultAsync(c => c.CarId == carId);
+            return await _context.Cars
+                .Where(c => c.CarId == carId)
+                .Select(c => new CarsDto
+                {
+                    CarId = c.CarId,
+                    Make = c.Make,
+                    Model = c.Model,
+                    Version = c.Version,
+                    Year = c.Year,
+                    VIN = c.VIN,
+                    LicensePlate = c.LicensePlate,
+                    EngineType = c.EngineType,
+                    EngineDisplacement = c.EngineDisplacement,
+                    HorsePower = c.HorsePower,
+                    Torque = c.Torque,
+                    Transmission = c.Transmission,
+                    Gears = c.Gears,
+                    ExteriorColor = c.ExteriorColor,
+                    InteriorColor = c.InteriorColor,
+                    InteriorMaterial = c.InteriorMaterial,
+                    Mileage = c.Mileage,
+                    FuelType = c.FuelType,
+                    FuelConsumption = c.FuelConsumption,
+                    BodyStyle = c.BodyStyle,
+                    OwnersCount = c.OwnersCount,
+                    HasOriginalDocuments = c.HasOriginalDocuments,
+                    Condition = c.Condition,
+                    IsAsiCertified = c.IsAsiCertified,
+                    CertificationDate = c.CertificationDate,
+                    IsRoadLegal = c.IsRoadLegal,
+                    LastInspectionDate = c.LastInspectionDate,
+                    Description = c.Description,
+                    Price = c.Price,
+                    CarStatus = c.CarStatus,
+                    CreatedAt = c.CreatedAt,
+                    UpdatedAt = c.UpdatedAt,
+                    PublishedAt = c.PublishedAt,
+                    IsVisible = c.IsVisible,
+
+                    // Mapping delle categorie associate
+                    Categories = c.Categories
+                        .Select(cat => new CategoriesDto
+                        {
+                            CategoryId = cat.CategoryId,
+                            Name = cat.Name
+                        })
+                        .ToList()
+                })
+                .FirstOrDefaultAsync();
         }
+
+
 
         //CREATE
 
@@ -79,6 +176,7 @@ namespace Vintage_Drive.Services
             {
                 return null;
             }
+            updatedCar.CarId = carId;
             // Aggiorna le proprietà dell'auto esistente
             _context.Entry(existingCar).CurrentValues.SetValues(updatedCar);
             await _context.SaveChangesAsync();

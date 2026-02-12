@@ -61,3 +61,36 @@ body {
   color: #7d6a58;
   font-size: 1.2rem;
 }
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    .home-container {
+        margin-top: 2rem;
+        padding: 0 1rem;
+    }
+
+    .home-container h1 {
+        font-size: 1.8rem;
+    }
+
+    .home-container p {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .home-container {
+        margin-top: 1.5rem;
+    }
+
+    .home-container h1 {
+        font-size: 1.4rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .home-container p {
+        font-size: 0.95rem;
+    }
+}

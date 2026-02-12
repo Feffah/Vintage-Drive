@@ -43,3 +43,50 @@
     color: #d9534f;
     margin-top: 0.5rem;
 }
+
+@media (max-width: 768px) {
+    .auth-container {
+        max-width: 100%;
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    .auth-container h2 {
+        font-size: 1.3rem;
+    }
+
+    .auth-container input {
+        font-size: 16px;
+        padding: 0.85rem;
+    }
+
+    .auth-container button {
+        font-size: 1rem;
+        padding: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        border-radius: 12px;
+        padding: 1.25rem;
+        max-width: 100%;
+        margin: 1rem;
+    }
+
+    .auth-container h2 {
+        font-size: 1.2rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .auth-container input {
+        font-size: 16px;
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .auth-container button {
+        padding: 0.75rem;
+        font-size: 0.95rem;
+    }
+}

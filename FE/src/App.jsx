@@ -5,10 +5,14 @@ import Home from './pages/home/Home'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import Products from './pages/products/Products'
-import Categories from './pages/categories/Categories'
+import Categories from './pages/categories/categories'
 import Cart from './pages/cart/Cart'
 import Footer from './components/footer/Footer'
 import ProductsDetails from './pages/products/ProductsDetails'
+import Orders from './pages/orders/Orders'
+import Checkout from './pages/checkout/Checkout'
+import Profile from './pages/profile/Profile'
+import OrdersAdmin from './pages/ordersAdmin/OrdersAdmin'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
@@ -57,17 +61,7 @@ function App() {
   };
   const handleCheckout = () => {
     setCart([]);
-    alert('Thank you for your purchase!');
   };
-
-  // let content
-  // if (page === 'login') content = <Login onLogin={handleLogin} />
-  // else if (page === 'register') content = <Register onRegister={handleRegister} />
-  // else if (page === 'products') content = <Products onAddToCart={handleAddToCart} onNavigate={handleNavigate} />
-  // else if (page === 'details') content = <ProductsDetails onAddToCart={handleAddToCart} />
-
-  // else if (page === 'cart') content = <Cart cart={cart} onRemove={handleRemoveFromCart} onChangeQuantity={handleChangeQuantity} onCheckout={handleCheckout} />
-  // else content = <Home />
 
   return (
     <>
@@ -80,6 +74,10 @@ function App() {
           <Route path="/categories" element={<Categories/>} />
           <Route path="/details/:productId" element={<ProductsDetails onAddToCart={handleAddToCart} />} />
           <Route path="/cart" element={<Cart cart={cart} onRemove={handleRemoveFromCart} onChangeQuantity={handleChangeQuantity} onCheckout={handleCheckout} />} />
+          <Route path="/checkout" element={<Checkout cart={cart} onCheckout={handleCheckout} />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/orders-admin" element={<OrdersAdmin />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/register" element={<Register onRegister={handleRegister} />} />
         </Routes>

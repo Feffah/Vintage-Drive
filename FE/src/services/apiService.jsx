@@ -67,6 +67,11 @@ export const createCategory = (data) =>
 export const updateCategory = (id, data) =>
   request(`/api/Categories/${id}`, "PUT", data);
 
+
+export const setCarToCategory = (carId, categoryId) =>
+  request(`/api/Categories/setCar/${carId}/${categoryId}`, "PUT");
+
+
 export const deleteCategory = (id) =>
   request(`/api/Categories/${id}`, "DELETE");
 
@@ -143,14 +148,27 @@ export const login = async (credentials) => {
   const data = await request("/api/Users/login", "POST", credentials);
 
   if (data?.token) {
-    localStorage.setItem("token", data.token);
+    localStorage.setItem("access_token", data.token);
+    localStorage.setItem("username", data.userName);
+    localStorage.setItem("userId", data.userId);
+    localStorage.setItem("roles", JSON.stringify(data.roles));
   }
 
+  return data;
+};
+
+//Register
+export const register = async (userData) => {
+  const data = await request("/api/Users", "POST", userData);
   return data;
 };
 
 //Logout
 
 export const logout = () => {
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("username");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("roles");
   localStorage.removeItem("token");
 };

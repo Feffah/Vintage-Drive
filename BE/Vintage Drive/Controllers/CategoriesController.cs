@@ -52,6 +52,20 @@ namespace Vintage_Drive.Controllers
             return Ok(updatedCategory);
         }
 
+        [HttpPut("setCar/{carId}/{categoryId}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<CategoriesDto>> SetCarToCategory(Guid carId, Guid categoryId)
+        {
+            var updatedCategory = await _categoriesService.AddCarToCategory(carId, categoryId);
+
+            if (updatedCategory == null)
+                return NotFound();
+
+            return Ok(updatedCategory);
+        }
+
+
+
         [HttpDelete("{id}")]
 
         [Authorize(Roles = "Admin")]

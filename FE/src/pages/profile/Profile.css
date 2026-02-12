@@ -1,0 +1,225 @@
+.profile-container {
+    padding: 2rem;
+    background: #f3f0e8;
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.profile-card {
+    background: #fffaf6;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    max-width: 900px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.profile-header {
+    background: linear-gradient(135deg, #b48a78 0%, #a07c6b 100%);
+    padding: 2rem;
+    color: #fff;
+    text-align: center;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.profile-title {
+    margin: 0;
+    flex: 1;
+    text-align: center;
+}
+
+.profile-avatar {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.profile-content {
+    padding: 2rem;
+}
+
+.profile-section {
+    margin-bottom: 2rem;
+}
+
+.profile-section:last-child {
+    margin-bottom: 0;
+}
+
+.section-title {
+    color: #b48a78;
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    margin-top: 0;
+    border-bottom: 2px solid #f0ece4;
+    padding-bottom: 0.5rem;
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.profile-item {
+    padding-bottom: 1rem;
+}
+
+.profile-label {
+    display: block;
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.profile-value {
+    margin: 0;
+    color: #5e4636;
+    font-size: 1rem;
+    word-break: break-word;
+}
+
+.profile-value.small {
+    font-size: 0.85rem;
+    font-family: 'Courier New', monospace;
+    background: #f5f5f5;
+    padding: 0.5rem;
+    border-radius: 4px;
+    overflow: auto;
+}
+
+.profile-input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #b48a78;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+    color: #5e4636;
+}
+
+.profile-input:focus {
+    outline: none;
+    border-color: #b48a78;
+    box-shadow: 0 0 0 0.2rem rgba(180, 138, 120, 0.25);
+}
+
+.role-badge {
+    display: inline-block;
+    background: #b48a78;
+    color: #fff;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #f0ece4;
+    justify-content: center;
+}
+
+.btn-edit {
+    background: #b48a78;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background 0.2s;
+}
+
+.btn-edit:hover {
+    background: #a07c6b;
+}
+
+.btn-save {
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background 0.2s;
+}
+
+.btn-save:hover {
+    background: #45a049;
+}
+
+.btn-save:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.btn-cancel {
+    background: #ff9800;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background 0.2s;
+}
+
+.btn-cancel:hover {
+    background: #f57c00;
+}
+
+.btn-cancel:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: #dc3545;
+    padding: 1rem;
+    background: #f8d7da;
+    border-radius: 8px;
+    margin: 1rem;
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 1rem;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.5rem;
+    }
+
+    .profile-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .profile-content {
+        padding: 1.5rem;
+    }
+}
