@@ -1,7 +1,7 @@
 import './Products.css';
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react';
-import { getCars, getCarsByCategory, createCar, updateCar, deleteCar, createCategory, setCarToCategory } from "../../services/apiService";
+import { getCars, getCarsByCategory, createCar, updateCar, deleteCar, createCategory, setCarToCategory, createCarForm, updateCarForm, BASE_URL } from "../../services/apiService";
 import { getCategories } from "../../services/apiService";
 import { checkLogin } from "../../services/loginService";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +21,7 @@ export default function Products({ onAddToCart, onNavigate }) {
     const [newCategoryName, setNewCategoryName] = useState('');
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [editingCarId, setEditingCarId] = useState(null);
-    
+
     const [formData, setFormData] = useState({
         make: '',
         model: '',
@@ -54,6 +54,25 @@ export default function Products({ onAddToCart, onNavigate }) {
         carStatus: 'Available',
         isVisible: true,
     });
+    const [imageFiles, setImageFiles] = useState([]);
+
+    // Resolve image URL from different possible property names
+    const getFirstImageUrlFromCar = (car) => {
+        if (!car) return null;
+        const imgs = car.Images || car.images || [];
+        if (imgs.length > 0) {
+            const first = imgs[0];
+            const url = first?.imageUrl || first?.ImageUrl || first?.url || first?.imageUrlPath || null;
+            return ensureAbsoluteUrl(url);
+        }
+        return ensureAbsoluteUrl(car.image || car.Image || null);
+    };
+
+    const ensureAbsoluteUrl = (url) => {
+        if (!url) return null;
+        if (url.startsWith('http://') || url.startsWith('https://')) return url;
+        return `${BASE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+    };
 
     useEffect(() => {
         const checkLogged = () => {
@@ -63,7 +82,7 @@ export default function Products({ onAddToCart, onNavigate }) {
         checkLogged();
         fetchData();
     }, []);
-    
+
     const fetchData = async () => {
         try {
             setLoading(true);
@@ -78,7 +97,7 @@ export default function Products({ onAddToCart, onNavigate }) {
             setLoading(false);
         }
     };
-    
+
     const goToLogin = () => {
         navigate("/login");
     }
@@ -104,6 +123,11 @@ export default function Products({ onAddToCart, onNavigate }) {
         }));
     };
 
+    const handleImagesChange = (e) => {
+        const files = e.target.files ? Array.from(e.target.files) : [];
+        setImageFiles(files);
+    };
+
     const handleAddCategory = async (e) => {
         e.preventDefault();
         if (!newCategoryName.trim()) {
@@ -123,16 +147,16 @@ export default function Products({ onAddToCart, onNavigate }) {
     };
 
     const handleCategoryToggle = (categoryId) => {
-        setSelectedCategories(prev => 
-            prev.includes(categoryId) 
+        setSelectedCategories(prev =>
+            prev.includes(categoryId)
                 ? prev.filter(id => id !== categoryId)
                 : [...prev, categoryId]
         );
     };
 
     const validateForm = () => {
-        if (!formData.make || !formData.model || !formData.year || !formData.vin || 
-            !formData.licensePlate || !formData.engineType || !formData.transmission || 
+        if (!formData.make || !formData.model || !formData.year || !formData.vin ||
+            !formData.licensePlate || !formData.engineType || !formData.transmission ||
             !formData.exteriorColor || !formData.bodyStyle || !formData.price || !formData.description) {
             setError('Completa tutti i campi obbligatori');
             return false;
@@ -182,8 +206,28 @@ export default function Products({ onAddToCart, onNavigate }) {
                 updatedAt: new Date().toISOString(),
             };
 
-            const newCar = await createCar(carData);
-            const carId = newCar.carId || newCar.id;
+            // Build FormData including fields
+            const fd = new FormData();
+            Object.keys(carData).forEach(key => {
+                if (carData[key] !== undefined && carData[key] !== null) {
+                    fd.append(key, carData[key]);
+                }
+            });
+
+            const imagesDtos = imageFiles.map(file => ({
+                ImageUrl: file.name,
+                CarId: editingCarId
+            }));
+
+            if (imagesDtos.length > 0) {
+                fd.append('Images', JSON.stringify(imagesDtos));
+                imageFiles.forEach(file => fd.append('UploadedImages', file));
+            }
+
+
+            const newCar = await createCarForm(fd);
+
+            const carId = newCar.carId || newCar.id || newCar.carId;
 
             // Assegna le categorie all'auto
             if (selectedCategories.length > 0) {
@@ -192,7 +236,7 @@ export default function Products({ onAddToCart, onNavigate }) {
 
             // Se la creazione è riuscita, aggiungi l'auto alla lista
             setCars(prev => [...prev, newCar]);
-            
+
             // Reset del form
             setFormData({
                 make: '',
@@ -228,6 +272,7 @@ export default function Products({ onAddToCart, onNavigate }) {
             });
             setSelectedCategories([]);
             setShowCreateForm(false);
+            setImageFiles([]);
 
             alert('Auto creata con successo!');
         } catch (err) {
@@ -273,6 +318,8 @@ export default function Products({ onAddToCart, onNavigate }) {
             isVisible: car.isVisible,
         });
         setSelectedCategories(car.categories?.map(c => c.categoryId) || []);
+        // Keep a reference to existing images if needed (not required now)
+        setImageFiles([]);
         setShowCreateForm(true);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -352,7 +399,25 @@ export default function Products({ onAddToCart, onNavigate }) {
                 updatedAt: new Date().toISOString(),
             };
 
-            await updateCar(editingCarId, carData);
+            // Build FormData for update
+            const fd = new FormData();
+            Object.keys(carData).forEach(key => {
+                if (carData[key] !== undefined && carData[key] !== null) {
+                    fd.append(key, carData[key]);
+                }
+            });
+
+            const imagesDtos = imageFiles.map(file => ({
+                ImageUrl: file.name,
+                CarId: editingCarId
+            }));
+
+            if (imagesDtos.length > 0) {
+                fd.append('Images', JSON.stringify(imagesDtos));
+                imageFiles.forEach(file => fd.append('UploadedImages', file));
+            }
+
+            await updateCarForm(editingCarId, fd);
 
             // Aggiorna le categorie associate all'auto
             if (selectedCategories.length > 0) {
@@ -380,7 +445,7 @@ export default function Products({ onAddToCart, onNavigate }) {
     return (
         <div className="products-container">
             <h2>Vintage Cars</h2>
-            
+
             {isAdmin && (
                 <div className='d-flex align-items-center justify-content-center gap-3 mb-5'>
                     {!showCreateForm ? (
@@ -396,14 +461,13 @@ export default function Products({ onAddToCart, onNavigate }) {
                 </div>
             )}
 
-            {/* Form Creazione/Modifica Auto */}
             {showCreateForm && isAdmin && (
                 <div className="form-container">
                     <div className="form-header">
                         <h3>
                             {editingCarId ? 'Modifica Auto' : 'Aggiungi Nuova Auto'}
                         </h3>
-                        <button 
+                        <button
                             onClick={() => {
                                 setShowCreateForm(false);
                                 resetForm();
@@ -417,7 +481,6 @@ export default function Products({ onAddToCart, onNavigate }) {
                     {error && <p className="error-message">{error}</p>}
 
                     <form onSubmit={editingCarId ? handleSubmitUpdateCar : handleSubmitCreateCar} className="form-grid">
-                        {/* Sezione Informazioni Generali */}
                         <div className="form-grid-full">
                             <h4 className="form-section-title">Informazioni Generali</h4>
                         </div>
@@ -452,7 +515,6 @@ export default function Products({ onAddToCart, onNavigate }) {
                             <input type="text" className="form-control" name="licensePlate" value={formData.licensePlate} onChange={handleInputChange} placeholder="es. AA123BB" required />
                         </div>
 
-                        {/* Sezione Motore */}
                         <div className="form-grid-full">
                             <h4 className="form-section-title">Motore</h4>
                         </div>
@@ -505,7 +567,6 @@ export default function Products({ onAddToCart, onNavigate }) {
                             <input type="number" step="0.1" className="form-control" name="fuelConsumption" value={formData.fuelConsumption || ''} onChange={handleInputChange} placeholder="10.5" />
                         </div>
 
-                        {/* Sezione Aspetto */}
                         <div className="form-grid-full">
                             <h4 className="form-section-title">Aspetto</h4>
                         </div>
@@ -542,7 +603,6 @@ export default function Products({ onAddToCart, onNavigate }) {
                             </select>
                         </div>
 
-                        {/* Sezione Condizione */}
                         <div className="form-grid-full">
                             <h4 className="form-section-title">Condizione</h4>
                         </div>
@@ -619,8 +679,8 @@ export default function Products({ onAddToCart, onNavigate }) {
                             <div className="categories-box">
                                 {categories.map(cat => (
                                     <label key={cat.categoryId}>
-                                        <input 
-                                            type="checkbox" 
+                                        <input
+                                            type="checkbox"
                                             checked={selectedCategories.includes(cat.categoryId)}
                                             onChange={() => handleCategoryToggle(cat.categoryId)}
                                         />
@@ -628,7 +688,7 @@ export default function Products({ onAddToCart, onNavigate }) {
                                     </label>
                                 ))}
                             </div>
-                            <button 
+                            <button
                                 type="button"
                                 onClick={() => setShowNewCategoryForm(!showNewCategoryForm)}
                                 className="btn-add-category"
@@ -638,13 +698,13 @@ export default function Products({ onAddToCart, onNavigate }) {
 
                             {showNewCategoryForm && (
                                 <div className="new-category-form">
-                                    <input 
-                                        type="text" 
-                                        value={newCategoryName} 
-                                        onChange={(e) => setNewCategoryName(e.target.value)} 
+                                    <input
+                                        type="text"
+                                        value={newCategoryName}
+                                        onChange={(e) => setNewCategoryName(e.target.value)}
                                         placeholder="Nome categoria"
                                     />
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={handleAddCategory}
                                         className="btn-add-category-submit"
@@ -657,27 +717,31 @@ export default function Products({ onAddToCart, onNavigate }) {
 
                         <div className="form-grid-full">
                             <label className="form-label">Descrizione *</label>
-                            <textarea 
+                            <textarea
                                 className="form-control"
-                                name="description" 
-                                value={formData.description} 
-                                onChange={handleInputChange} 
+                                name="description"
+                                value={formData.description}
+                                onChange={handleInputChange}
                                 placeholder="Descrizione dettagliata dell'auto..."
                                 required
                             />
                         </div>
 
-                        {/* Pulsanti */}
+                        <div>
+                            <label className="form-label">Immagini</label>
+                            <input type="file" name="images" multiple accept="image/*" onChange={handleImagesChange} />
+                        </div>
+
                         <div className="form-buttons">
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 disabled={loading}
                                 className="btn-submit"
                             >
                                 {loading ? (editingCarId ? 'Salvataggio in corso...' : 'Creazione in corso...') : (editingCarId ? 'Salva Modifiche' : 'Crea Auto')}
                             </button>
                             {editingCarId && (
-                                <button 
+                                <button
                                     type="button"
                                     onClick={() => {
                                         resetForm();
@@ -688,7 +752,7 @@ export default function Products({ onAddToCart, onNavigate }) {
                                     Cancella Modifica
                                 </button>
                             )}
-                            <button 
+                            <button
                                 type="button"
                                 onClick={() => {
                                     setShowCreateForm(false);
@@ -718,11 +782,16 @@ export default function Products({ onAddToCart, onNavigate }) {
                 {cars.length > 0 &&
                     cars.map(car => (
                         <div className="product-card" key={car.carId}>
+                            {getFirstImageUrlFromCar(car) && (
+                                <div className="product-image" style={{ marginBottom: '0.8rem' }}>
+                                    <img src={getFirstImageUrlFromCar(car)} alt={car.make} style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '8px' }} />
+                                </div>
+                            )}
                             <h3>{car.make}</h3>
                             <p>{car.model}</p>
                             <p>${car.price}</p>
                             {isLogged &&
-                                <button  className="cardButton" onClick={() => onAddToCart(car)}>Aggiungi al carrello</button>
+                                <button className="cardButton" onClick={() => onAddToCart(car)}>Aggiungi al carrello</button>
                             }
                             {!isLogged &&
                                 <button className="cardButton" onClick={() => goToLogin()}>Effettua il login per acquistare</button>
@@ -732,15 +801,15 @@ export default function Products({ onAddToCart, onNavigate }) {
                             </Link>
                             {isAdmin && (
                                 <div className="admin-actions">
-                                    <button 
-                                        className="cardButton" 
+                                    <button
+                                        className="cardButton"
                                         onClick={() => handleEditCar(car)}
                                         style={{ background: '#4CAF50' }}
                                     >
                                         Modifica
                                     </button>
-                                    <button 
-                                        className="cardButton" 
+                                    <button
+                                        className="cardButton"
                                         onClick={() => handleDeleteCar(car.carId)}
                                         style={{ background: '#f44336' }}
                                     >

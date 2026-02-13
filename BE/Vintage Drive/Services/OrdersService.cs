@@ -12,10 +12,30 @@ namespace Vintage_Drive.Services
             _context = context;
         }
         //GET ALL
-        public async Task<List<Models.Entities.Orders>> GetAllOrdersAsync()
+        public async Task<List<OrdersDto>> GetAllOrdersAsync()
         {
-            return await _context.Orders.ToListAsync();
+            var orders = await _context.Orders
+                .Include(o => o.Cars)
+                    .ThenInclude(c => c.Images)         
+                .Include(o => o.Cars)
+                    .ThenInclude(c => c.Categories)    
+                .ToListAsync();
+
+            var ordersDto = orders.Select(o => new OrdersDto
+            {
+                OrderId = o.OrderId,
+                UserId = o.UserId,
+                PaymentId = o.PaymentId ?? Guid.Empty,
+                ShipmentId = o.ShipmentId ?? Guid.Empty,
+                OrderDate = o.OrderDate,
+                TotalAmount = o.TotalAmount,
+                OrderStatus = o.OrderStatus,
+                CarId = o.Cars.Select(c => c.CarId).ToList()
+            }).ToList();
+
+            return ordersDto;
         }
+
         //GET BY ID
         public async Task<Models.Entities.Orders?> GetOrderByIdAsync(Guid orderId)
         {

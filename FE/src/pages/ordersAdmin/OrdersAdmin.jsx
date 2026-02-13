@@ -127,13 +127,13 @@ export default function OrdersAdmin() {
 
     const getStatusBadgeClass = (status) => {
         switch (status?.toLowerCase()) {
-            case 'pending':
+            case 'in sospeso':
                 return 'status-pending';
-            case 'processing':
+            case 'in elaborazione':
                 return 'status-processing';
-            case 'completed':
+            case 'completato':
                 return 'status-completed';
-            case 'cancelled':
+            case 'cancellato':
                 return 'status-cancelled';
             default:
                 return 'status-default';
@@ -171,10 +171,10 @@ export default function OrdersAdmin() {
                             className="filter-select"
                         >
                             <option value="All">Tutti gli ordini</option>
-                            <option value="Pending">In sospeso</option>
-                            <option value="Processing">In elaborazione</option>
-                            <option value="Completed">Completato</option>
-                            <option value="Cancelled">Cancellato</option>
+                            <option value="In Sospeso">In sospeso</option>
+                            <option value="In elaborazione">In elaborazione</option>
+                            <option value="Completato">Completato</option>
+                            <option value="Cancellato">Cancellato</option>
                         </select>
                     </div>
                     <button className="btn-refresh" onClick={fetchOrders}>
@@ -281,15 +281,15 @@ export default function OrdersAdmin() {
                                                 <div className="form-group-status">
                                                     <label className="status-label">Nuovo Stato:</label>
                                                     <select 
-                                                        value={editingStatus !== null ? editingStatus : (order.orderStatus || 'Pending')} 
+                                                        value={editingStatus !== null ? editingStatus : (order.orderStatus || 'In Sospeso')} 
                                                         onChange={(e) => handleStatusChange(e.target.value)}
                                                         onClick={(e) => e.stopPropagation()}
                                                         className="status-select"
                                                     >
-                                                        <option value="Pending">In sospeso</option>
-                                                        <option value="Processing">In elaborazione</option>
-                                                        <option value="Completed">Completato</option>
-                                                        <option value="Cancelled">Cancellato</option>
+                                                        <option value="In Sospeso">In sospeso</option>
+                                                        <option value="In elaborazione">In elaborazione</option>
+                                                        <option value="Completato">Completato</option>
+                                                        <option value="Cancellato">Cancellato</option>
                                                     </select>
                                                 </div>
                                                 <div className="status-actions">

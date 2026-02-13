@@ -53,5 +53,8 @@ namespace Vintage_Drive.Models.Entities
         // One-to-many: Car -> Order
         public Guid? OrderId { get; set; }
         public Orders? Orders { get; set; }
+        // One-to-many: Car -> CarImage
+        public ICollection<CarImage> Images { get; set; } = new List<CarImage>();
+
     }
 }

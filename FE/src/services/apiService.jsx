@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5034";
+export const BASE_URL = "http://localhost:5034";
 
 //Headers
 
@@ -49,6 +49,49 @@ export const createCar = (data) =>
 
 export const updateCar = (id, data) =>
   request(`/api/Cars/${id}`, "PUT", data);
+
+// Create / Update car using FormData (for images). Do not set Content-Type so browser sets the boundary.
+export const createCarForm = async (formData) => {
+  const token = localStorage.getItem("access_token");
+  const headers = {
+    ...(token && { Authorization: `Bearer ${token}` }),
+  };
+
+  const response = await fetch(`${BASE_URL}/api/Cars`, {
+    method: 'POST',
+    headers,
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Errore nella richiesta");
+  }
+
+  if (response.status === 204) return null;
+  return response.json();
+};
+
+export const updateCarForm = async (id, formData) => {
+  const token = localStorage.getItem("access_token");
+  const headers = {
+    ...(token && { Authorization: `Bearer ${token}` }),
+  };
+
+  const response = await fetch(`${BASE_URL}/api/Cars/${id}`, {
+    method: 'PUT',
+    headers,
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Errore nella richiesta");
+  }
+
+  if (response.status === 204) return null;
+  return response.json();
+};
 
 export const deleteCar = (id) =>
   request(`/api/Cars/${id}`, "DELETE");

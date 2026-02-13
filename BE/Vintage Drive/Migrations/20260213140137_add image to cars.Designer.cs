@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Vintage_Drive.Data;
 
@@ -11,9 +12,11 @@ using Vintage_Drive.Data;
 namespace Vintage_Drive.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260213140137_add image to cars")]
+    partial class addimagetocars
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -656,7 +659,7 @@ namespace Vintage_Drive.Migrations
                     b.HasOne("Vintage_Drive.Models.Entities.Orders", "Orders")
                         .WithMany("Cars")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Vintage_Drive.Models.Entities.Shipments", "Shipments")
                         .WithMany("Cars")

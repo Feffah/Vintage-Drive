@@ -107,7 +107,7 @@ export default function Orders() {
 
                         <div style={{ background: '#f5f5f5', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
                             <p><strong>Data Ordine:</strong> {new Date(selectedOrder.orderDate).toLocaleDateString('it-IT')}</p>
-                            <p><strong>Stato:</strong> <span style={{ color: '#b48a78', fontWeight: 'bold' }}>{selectedOrder.status || 'In attesa'}</span></p>
+                            <p><strong>Stato:</strong> <span style={{ color: '#b48a78', fontWeight: 'bold' }}>{selectedOrder.orderStatus || 'In attesa'}</span></p>
                             <p><strong>Totale:</strong> <span style={{ fontSize: '1.1em', color: '#b48a78', fontWeight: 'bold' }}>${selectedOrder.totalAmount?.toLocaleString() || '0'}</span></p>
                             <p><strong>Descrizione:</strong> {selectedOrder.description || 'Nessuna descrizione'}</p>
                         </div>
@@ -130,7 +130,7 @@ export default function Orders() {
                             <h3 style={{ color: '#b48a78' }}>Ordine #{order.orderId}</h3>
                             <div style={{ background: '#f5f5f5', padding: '1rem', borderRadius: '8px', marginBottom: '1rem' }}>
                                 <p><strong>Data:</strong> {new Date(order.orderDate).toLocaleDateString('it-IT')}</p>
-                                <p><strong>Stato:</strong> <span style={{ color: '#b48a78', fontWeight: 'bold' }}>{order.status || 'In attesa'}</span></p>
+                                <p><strong>Stato:</strong> <span style={{ color: '#b48a78', fontWeight: 'bold' }}>{order.orderStatus || 'In attesa'}</span></p>
                                 <p><strong>Importo:</strong> <span style={{ fontSize: '1.1em', color: '#b48a78', fontWeight: 'bold' }}>${order.totalAmount?.toLocaleString() || '0'}</span></p>
                             </div>
                             <button

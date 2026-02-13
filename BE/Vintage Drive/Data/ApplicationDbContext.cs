@@ -15,6 +15,7 @@ namespace Vintage_Drive.Data
         public DbSet<Orders> Orders { get; set; }
 
         public DbSet<Cars> Cars { get; set; }
+        public DbSet<CarImage> CarImage { get; set; }
 
         public DbSet<Shipments> Shipments { get; set; }
 
@@ -52,24 +53,27 @@ namespace Vintage_Drive.Data
                 .HasOne(c => c.Orders)
                 .WithMany(o => o.Cars)
                 .HasForeignKey(c => c.OrderId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             // Cars <-> Shipments (uno-a-molti)
             modelBuilder.Entity<Cars>()
                 .HasOne(c => c.Shipments)
                 .WithMany(s => s.Cars)
                 .HasForeignKey(c => c.ShipmentId)
-                .OnDelete(DeleteBehavior.Restrict); // <--- essenziale
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Cars <-> Categories (many-to-many)
             modelBuilder.Entity<Cars>()
                 .HasMany(c => c.Categories)
                 .WithMany(ca => ca.Cars);
+
+            modelBuilder.Entity<CarImage>()
+            .HasOne(ci => ci.Car)  
+            .WithMany(c => c.Images)  
+            .HasForeignKey(ci => ci.CarId)  
+            .OnDelete(DeleteBehavior.Cascade); 
         }
-
-
-
-
 
     }
 

@@ -38,5 +38,9 @@
         public bool IsVisible { get; set; }         // Visibilità dell'annuncio
 
         public List<CategoriesDto> Categories { get; set; } = new();
+        public List<IFormFile>? UploadedImages { get; set; }  // per upload
+
+        public List<CarImageDto> Images { get; set; } = new();
+
     }
 }

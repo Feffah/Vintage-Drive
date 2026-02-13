@@ -1,21 +1,28 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Vintage_Drive.Data;
 using Vintage_Drive.Models.Dto;
+using Microsoft.AspNetCore.Hosting;
+
 using Vintage_Drive.Models.Entities;
 namespace Vintage_Drive.Services
 {
     public class CarsService
     {
         private readonly ApplicationDbContext _context;
-        public CarsService(ApplicationDbContext context)
+        private readonly IWebHostEnvironment _env;
+
+        public CarsService(ApplicationDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         //GET ALL
         public async Task<List<CarsDto>> GetAllCarsAsync()
         {
             return await _context.Cars
+                .Include(c => c.Categories) 
+                .Include(c => c.Images) 
                 .Select(c => new CarsDto
                 {
                     CarId = c.CarId,
@@ -52,15 +59,27 @@ namespace Vintage_Drive.Services
                     UpdatedAt = c.UpdatedAt,
                     PublishedAt = c.PublishedAt,
                     IsVisible = c.IsVisible,
+
+                    // Map delle categorie
                     Categories = c.Categories
                         .Select(cat => new CategoriesDto
                         {
                             CategoryId = cat.CategoryId,
                             Name = cat.Name
+                        }).ToList(),
+
+                    // Map delle immagini
+                    Images = c.Images
+                        .Select(img => new CarImageDto
+                        {
+                            ImageId = img.ImageId,
+                            CarId = img.CarId,
+                            ImageUrl = img.ImageUrl
                         }).ToList()
                 })
                 .ToListAsync();
         }
+
 
 
         //GET BY ID
@@ -69,6 +88,8 @@ namespace Vintage_Drive.Services
         {
             return await _context.Cars
                 .Where(c => c.CarId == carId)
+                .Include(c => c.Categories) 
+                .Include(c => c.Images) 
                 .Select(c => new CarsDto
                 {
                     CarId = c.CarId,
@@ -106,14 +127,22 @@ namespace Vintage_Drive.Services
                     PublishedAt = c.PublishedAt,
                     IsVisible = c.IsVisible,
 
-                    // Mapping delle categorie associate
+                    // Map delle categorie
                     Categories = c.Categories
                         .Select(cat => new CategoriesDto
                         {
                             CategoryId = cat.CategoryId,
                             Name = cat.Name
-                        })
-                        .ToList()
+                        }).ToList(),
+
+                    // Map delle immagini
+                    Images = c.Images
+                        .Select(img => new CarImageDto
+                        {
+                            ImageId = img.ImageId,
+                            CarId = img.CarId,
+                            ImageUrl = img.ImageUrl
+                        }).ToList()
                 })
                 .FirstOrDefaultAsync();
         }
@@ -123,7 +152,7 @@ namespace Vintage_Drive.Services
         //CREATE
 
         public async Task<Models.Entities.Cars> CreateCarAsync(Models.Dto.CarsDto car)
-            {
+        {
             var newCar = new Models.Entities.Cars
             {
                 CarId = Guid.NewGuid(),
@@ -160,28 +189,99 @@ namespace Vintage_Drive.Services
                 UpdatedAt = DateTime.UtcNow,
                 PublishedAt = car.PublishedAt,
                 IsVisible = car.IsVisible
-
             };
+
             _context.Cars.Add(newCar);
-            await _context.SaveChangesAsync();
-            return newCar;
+            await _context.SaveChangesAsync(); // Serve per avere CarId salvato
+
+            if (car.UploadedImages != null && car.UploadedImages.Count > 0)
+            {
+                var folderPath = Path.Combine(_env.WebRootPath, "images/cars");
+                if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+
+                foreach (var file in car.UploadedImages)
+                {
+                    if (file.Length > 0)
+                    {
+                        var fileName = $"{Guid.NewGuid()}_{file.FileName}";
+                        var fullPath = Path.Combine(folderPath, fileName);
+
+                        using (var stream = new FileStream(fullPath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+
+                        var carImage = new Models.Entities.CarImage
+                        {
+                            ImageId = Guid.NewGuid(),
+                            CarId = newCar.CarId,
+                            ImageUrl = $"/images/cars/{fileName}"
+                        };
+
+                        _context.CarImage.Add(carImage);
+                    }
+                }
+
+                await _context.SaveChangesAsync(); // Salva le immagini
+            }
+            foreach (var img in newCar.Images)
+            {
+                img.Car = null;
+            }
+
+            return newCar!;
         }
+
+
 
         //UPDATE
 
         public async Task<Models.Entities.Cars?> UpdateCarAsync(Guid carId, Models.Dto.CarsDto updatedCar)
         {
-            var existingCar = await _context.Cars.FirstOrDefaultAsync(c => c.CarId == carId);
+            var existingCar = await _context.Cars
+                .Include(c => c.Images) // Include immagini esistenti
+                .FirstOrDefaultAsync(c => c.CarId == carId);
+
             if (existingCar == null)
-            {
                 return null;
-            }
             updatedCar.CarId = carId;
-            // Aggiorna le proprietà dell'auto esistente
+            // Aggiorna le proprietà dell'auto esistente (esclude la lista Images)
             _context.Entry(existingCar).CurrentValues.SetValues(updatedCar);
+
+            // Gestione nuove immagini caricate
+            if (updatedCar.UploadedImages != null && updatedCar.UploadedImages.Count > 0)
+            {
+                var folderPath = Path.Combine(_env.WebRootPath, "images/cars");
+                if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+
+                foreach (var file in updatedCar.UploadedImages)
+                {
+                    if (file.Length > 0)
+                    {
+                        var fileName = $"{Guid.NewGuid()}_{file.FileName}";
+                        var fullPath = Path.Combine(folderPath, fileName);
+
+                        using (var stream = new FileStream(fullPath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+
+                        var carImage = new Models.Entities.CarImage
+                        {
+                            ImageId = Guid.NewGuid(),
+                            CarId = existingCar.CarId,
+                            ImageUrl = $"/images/cars/{fileName}"
+                        };
+
+                        _context.CarImage.Add(carImage);
+                    }
+                }
+            }
+
             await _context.SaveChangesAsync();
             return existingCar;
         }
+
 
         //DELETE
 

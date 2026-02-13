@@ -42,14 +42,15 @@ namespace Vintage_Drive.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<CarsDto>> CreateCar([FromBody] CarsDto carCreateDto)
+        public async Task<IActionResult> CreateCar([FromForm] CarsDto car)
         {
-            var createdCar = await _carService.CreateCarAsync(carCreateDto);
-            return CreatedAtAction(nameof(GetCarById), new { id = createdCar.CarId }, createdCar);
+            var result = await _carService.CreateCarAsync(car);
+            return Ok(result);
         }
+
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateCar(Guid id, [FromBody] CarsDto carUpdateDto)
+        public async Task<IActionResult> UpdateCar(Guid id, [FromForm] CarsDto carUpdateDto)
         {
             var result = await _carService.UpdateCarAsync(id, carUpdateDto);
             if (result == null)
